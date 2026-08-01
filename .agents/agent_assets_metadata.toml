@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "c1WBX6KmoAWkT49RNipjX"
+uri = "file://pleer-full.zip"
+type = "unspecified"
+title = "Pleer — полный исходный код (все файлы)"

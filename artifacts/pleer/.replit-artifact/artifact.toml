@@ -1,0 +1,28 @@
+kind = "web"
+    previewPath = "/"
+    title = "Pleer Marketplace"
+    version = "1.0.0"
+    id = "artifacts/pleer"
+    router = "path"
+
+    [[services]]
+    name = "web"
+    paths = [ "/" ]
+    localPort = 22893
+
+    [services.development]
+    run = "pnpm --filter @workspace/pleer run dev"
+
+    [services.production]
+    build = [ "pnpm", "--filter", "@workspace/pleer", "run", "build" ]
+    serve = "static"
+    publicDir = "artifacts/pleer/dist/public"
+
+    [[services.production.rewrites]]
+    from = "/*"
+    to = "/index.html"
+
+    [services.env]
+    PORT = "22893"
+    BASE_PATH = "/"
+    

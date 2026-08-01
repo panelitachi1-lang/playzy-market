@@ -1,0 +1,688 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Pleer Marketplace API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: listings
+    description: Marketplace listings
+  - name: messages
+    description: Direct messaging
+  - name: users
+    description: User profiles
+  - name: stats
+    description: Dashboard statistics
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ── User profile ──────────────────────────────────────────────
+  /users/me:
+    get:
+      operationId: getMyProfile
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+    put:
+      operationId: updateMyProfile
+      tags: [users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+
+  /users/{userId}:
+    get:
+      operationId: getUserProfile
+      tags: [users]
+      summary: Get public user profile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "404":
+          description: Not found
+
+  # ── Listings ──────────────────────────────────────────────────
+  /listings:
+    get:
+      operationId: getListings
+      tags: [listings]
+      summary: Get marketplace listings
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [sell, buy, all]
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: integer
+        - name: maxPrice
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingsPage"
+
+    post:
+      operationId: createListing
+      tags: [listings]
+      summary: Create a listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingInput"
+      responses:
+        "201":
+          description: Created listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "401":
+          description: Unauthorized
+
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      summary: Get a single listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "404":
+          description: Not found
+
+    patch:
+      operationId: updateListing
+      tags: [listings]
+      summary: Update a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingUpdate"
+      responses:
+        "200":
+          description: Updated listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
+    delete:
+      operationId: deleteListing
+      tags: [listings]
+      summary: Delete a listing
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
+  /listings/my:
+    get:
+      operationId: getMyListings
+      tags: [listings]
+      summary: Get current user's listings
+      responses:
+        "200":
+          description: My listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+        "401":
+          description: Unauthorized
+
+  /listings/user/{userId}:
+    get:
+      operationId: getUserListings
+      tags: [listings]
+      summary: Get listings by user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User's listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /listings/trending:
+    get:
+      operationId: getTrendingListings
+      tags: [listings]
+      summary: Get trending/recent listings
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Trending listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /listings/categories:
+    get:
+      operationId: getCategories
+      tags: [listings]
+      summary: Get listing categories with counts
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  # ── Messages ──────────────────────────────────────────────────
+  /conversations:
+    get:
+      operationId: getConversations
+      tags: [messages]
+      summary: Get user's conversations
+      responses:
+        "200":
+          description: Conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+        "401":
+          description: Unauthorized
+
+    post:
+      operationId: createConversation
+      tags: [messages]
+      summary: Create or get conversation with another user about a listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "201":
+          description: Conversation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+        "401":
+          description: Unauthorized
+
+  /conversations/{conversationId}/messages:
+    get:
+      operationId: getMessages
+      tags: [messages]
+      summary: Get messages in a conversation
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not found
+
+    post:
+      operationId: sendMessage
+      tags: [messages]
+      summary: Send a message in a conversation
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Sent message
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          description: Unauthorized
+
+  /conversations/unread-count:
+    get:
+      operationId: getUnreadCount
+      tags: [messages]
+      summary: Get total unread message count
+      responses:
+        "200":
+          description: Unread count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnreadCount"
+        "401":
+          description: Unauthorized
+
+  /conversations/{conversationId}/read:
+    post:
+      operationId: markConversationRead
+      tags: [messages]
+      summary: Mark conversation as read
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+        "401":
+          description: Unauthorized
+
+  # ── Stats ─────────────────────────────────────────────────────
+  /stats/dashboard:
+    get:
+      operationId: getDashboardStats
+      tags: [stats]
+      summary: Get marketplace dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+
+    UserProfile:
+      type: object
+      required: [clerkId, username, createdAt]
+      properties:
+        id:
+          type: integer
+        clerkId:
+          type: string
+        username:
+          type: string
+        displayName:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+        city:
+          type: ["string", "null"]
+        rating:
+          type: ["number", "null"]
+        totalSales:
+          type: integer
+        totalPurchases:
+          type: integer
+        createdAt:
+          type: string
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        displayName:
+          type: string
+        bio:
+          type: string
+        city:
+          type: string
+        avatarUrl:
+          type: string
+
+    Listing:
+      type: object
+      required: [id, title, type, price, status, createdAt, sellerId]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        type:
+          type: string
+          enum: [sell, buy]
+        price:
+          type: integer
+        currency:
+          type: string
+        category:
+          type: ["string", "null"]
+        condition:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, sold, closed]
+        city:
+          type: ["string", "null"]
+        views:
+          type: integer
+        sellerId:
+          type: string
+        sellerName:
+          type: ["string", "null"]
+        sellerAvatarUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ListingInput:
+      type: object
+      required: [title, type, price]
+      properties:
+        title:
+          type: string
+          minLength: 3
+        description:
+          type: string
+        type:
+          type: string
+          enum: [sell, buy]
+        price:
+          type: integer
+          minimum: 0
+        currency:
+          type: string
+        category:
+          type: string
+        condition:
+          type: string
+        imageUrl:
+          type: string
+        city:
+          type: string
+
+    ListingUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 3
+        description:
+          type: string
+        price:
+          type: integer
+          minimum: 0
+        category:
+          type: string
+        condition:
+          type: string
+        imageUrl:
+          type: string
+        city:
+          type: string
+        status:
+          type: string
+          enum: [active, sold, closed]
+
+    ListingsPage:
+      type: object
+      required: [items, total, page, limit]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    Category:
+      type: object
+      required: [name, count]
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+
+    Conversation:
+      type: object
+      required: [id, listingId, buyerId, sellerId, createdAt]
+      properties:
+        id:
+          type: integer
+        listingId:
+          type: ["integer", "null"]
+        buyerId:
+          type: string
+        sellerId:
+          type: string
+        listingTitle:
+          type: ["string", "null"]
+        listingImageUrl:
+          type: ["string", "null"]
+        otherUserName:
+          type: ["string", "null"]
+        otherUserAvatarUrl:
+          type: ["string", "null"]
+        lastMessage:
+          type: ["string", "null"]
+        lastMessageAt:
+          type: ["string", "null"]
+        unreadCount:
+          type: integer
+        createdAt:
+          type: string
+
+    ConversationInput:
+      type: object
+      required: [otherUserId]
+      properties:
+        otherUserId:
+          type: string
+        listingId:
+          type: integer
+
+    Message:
+      type: object
+      required: [id, conversationId, senderId, text, createdAt]
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        senderId:
+          type: string
+        senderName:
+          type: ["string", "null"]
+        senderAvatarUrl:
+          type: ["string", "null"]
+        text:
+          type: string
+        createdAt:
+          type: string
+
+    MessageInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          minLength: 1
+
+    UnreadCount:
+      type: object
+      required: [count]
+      properties:
+        count:
+          type: integer
+
+    DashboardStats:
+      type: object
+      required: [totalListings, activeListings, totalUsers, totalMessages]
+      properties:
+        totalListings:
+          type: integer
+        activeListings:
+          type: integer
+        totalUsers:
+          type: integer
+        totalMessages:
+          type: integer
+        sellListings:
+          type: integer
+        buyListings:
+          type: integer
+        topCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"

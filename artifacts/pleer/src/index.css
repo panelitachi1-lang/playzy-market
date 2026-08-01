@@ -1,0 +1,240 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap');
+
+@layer theme, base, clerk, components, utilities;
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@clerk/themes/shadcn.css';
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --font-sans: 'Outfit', 'Arial', 'Helvetica', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 220 30% 98%;
+  --foreground: 220 50% 10%;
+  --border: 220 20% 90%;
+  --input: 220 20% 90%;
+  --ring: 250 100% 60%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 50% 10%;
+  --card-border: 220 20% 90%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 50% 10%;
+  --popover-border: 220 20% 90%;
+
+  --primary: 250 100% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 15% 92%;
+  --secondary-foreground: 220 50% 10%;
+
+  --muted: 220 15% 94%;
+  --muted-foreground: 220 10% 45%;
+
+  --accent: 220 15% 94%;
+  --accent-foreground: 220 50% 10%;
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 220 50% 6%;
+  --foreground: 220 20% 95%;
+  --border: 220 30% 15%;
+  --input: 220 30% 15%;
+  --ring: 250 100% 65%;
+
+  --card: 220 40% 8%;
+  --card-foreground: 220 20% 95%;
+  --card-border: 220 30% 15%;
+
+  --popover: 220 40% 8%;
+  --popover-foreground: 220 20% 95%;
+  --popover-border: 220 30% 15%;
+
+  --primary: 250 100% 65%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 30% 15%;
+  --secondary-foreground: 220 20% 95%;
+
+  --muted: 220 30% 12%;
+  --muted-foreground: 220 15% 60%;
+
+  --accent: 220 30% 15%;
+  --accent-foreground: 220 20% 95%;
+
+  --destructive: 0 62.8% 50.6%;
+  --destructive-foreground: 0 0% 100%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      linear-gradient(hsl(250 100% 60% / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(250 100% 60% / 0.035) 1px, transparent 1px),
+      radial-gradient(ellipse 70% 50% at 15% 15%, hsl(250 100% 65% / 0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 85% 85%, hsl(200 100% 60% / 0.06) 0%, transparent 55%) !important;
+    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100% !important;
+    background-attachment: fixed !important;
+  }
+}
+
+/* ── Button animations ── */
+@keyframes btn-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes sell-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.45), 0 4px 14px hsl(var(--primary) / 0.25); }
+  50%       { box-shadow: 0 0 0 7px hsl(var(--primary) / 0),  0 4px 20px hsl(var(--primary) / 0.4); }
+}
+@keyframes buy-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(34 197 94 / 0.45), 0 4px 14px rgb(34 197 94 / 0.25); }
+  50%       { box-shadow: 0 0 0 7px rgb(34 197 94 / 0),  0 4px 20px rgb(34 197 94 / 0.4); }
+}
+@keyframes float-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+/* Every interactive button gets a smooth press feel */
+@layer components {
+  button:not([disabled]):not([data-no-anim]),
+  [role="button"]:not([aria-disabled="true"]) {
+    transition: transform 0.13s ease, box-shadow 0.13s ease, filter 0.13s ease;
+  }
+  button:not([disabled]):not([data-no-anim]):hover,
+  [role="button"]:not([aria-disabled="true"]):hover {
+    transform: translateY(-1px) scale(1.025);
+    filter: brightness(1.06);
+  }
+  button:not([disabled]):not([data-no-anim]):active,
+  [role="button"]:not([aria-disabled="true"]):active {
+    transform: translateY(0) scale(0.97);
+    filter: brightness(0.96);
+  }
+
+  /* Primary CTA shimmer */
+  .btn-primary-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--primary) / 0.75) 40%,
+      hsl(var(--primary)) 60%,
+      hsl(var(--primary)) 100%
+    );
+    background-size: 200% auto;
+    animation: btn-shimmer 2.8s linear infinite;
+  }
+
+  /* Sell (продаю) pulsing glow */
+  .btn-sell-glow {
+    animation: sell-glow 2.2s ease-in-out infinite;
+  }
+
+  /* Buy (покупаю) pulsing glow */
+  .btn-buy-glow {
+    animation: buy-glow 2.2s ease-in-out infinite;
+  }
+
+  /* Floating Telegram button bounce */
+  .tg-float {
+    animation: float-bounce 3s ease-in-out infinite;
+  }
+}
+
+/* ── Game grid background ── */
+body {
+  background-image:
+    linear-gradient(hsl(250 100% 60% / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(250 100% 60% / 0.04) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 50% at 20% 20%, hsl(250 100% 60% / 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, hsl(200 100% 60% / 0.05) 0%, transparent 60%);
+  background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+/* ── Falling particles ── */
+@keyframes fall {
+  0%   { transform: translateY(-10vh) translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(110vh) translateX(20px); opacity: 0; }
+}
+
+.particles-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  top: -10px;
+  border-radius: 50%;
+  background: hsl(250 100% 65% / 0.5);
+  animation: fall linear infinite;
+}
+
+.particle:nth-child(1)  { left: 5%;  width: 6px;  height: 6px;  animation-duration: 8s;  animation-delay: 0s;   background: hsl(220 100% 65% / 0.5); }
+.particle:nth-child(2)  { left: 15%; width: 4px;  height: 4px;  animation-duration: 12s; animation-delay: 2s;   background: hsl(250 100% 65% / 0.4); }
+.particle:nth-child(3)  { left: 25%; width: 8px;  height: 8px;  animation-duration: 10s; animation-delay: 4s;   background: hsl(200 100% 60% / 0.4); }
+.particle:nth-child(4)  { left: 35%; width: 5px;  height: 5px;  animation-duration: 14s; animation-delay: 1s;   background: hsl(250 100% 65% / 0.5); }
+.particle:nth-child(5)  { left: 45%; width: 3px;  height: 3px;  animation-duration: 9s;  animation-delay: 6s;   background: hsl(220 100% 65% / 0.5); }
+.particle:nth-child(6)  { left: 55%; width: 7px;  height: 7px;  animation-duration: 11s; animation-delay: 3s;   background: hsl(200 100% 60% / 0.4); }
+.particle:nth-child(7)  { left: 65%; width: 4px;  height: 4px;  animation-duration: 13s; animation-delay: 5s;   background: hsl(250 100% 65% / 0.4); }
+.particle:nth-child(8)  { left: 75%; width: 6px;  height: 6px;  animation-duration: 8s;  animation-delay: 7s;   background: hsl(220 100% 65% / 0.5); }
+.particle:nth-child(9)  { left: 85%; width: 5px;  height: 5px;  animation-duration: 15s; animation-delay: 2s;   background: hsl(200 100% 60% / 0.4); }
+.particle:nth-child(10) { left: 92%; width: 3px;  height: 3px;  animation-duration: 10s; animation-delay: 8s;   background: hsl(250 100% 65% / 0.5); }
+.particle:nth-child(11) { left: 10%; width: 5px;  height: 5px;  animation-duration: 16s; animation-delay: 9s;   background: hsl(220 100% 65% / 0.4); }
+.particle:nth-child(12) { left: 70%; width: 4px;  height: 4px;  animation-duration: 11s; animation-delay: 11s;  background: hsl(200 100% 60% / 0.5); }
