@@ -1,0 +1,27 @@
+# Node modules (reinstalled in Docker)
+**/node_modules
+
+# Build output (rebuilt in Docker)
+**/dist
+artifacts/pleer/dist
+
+# Local/dev files
+.git
+.gitignore
+.local
+.agents
+**/.env
+**/*.env.local
+
+# Logs
+**/*.log
+**/logs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Replit-specific
+.replit
+replit.nix
+**/.replit
